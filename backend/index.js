@@ -9,7 +9,16 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 
-app.use(cors());
+// Cors allowed origin
+const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS.split(',');
+
+const corsOption = {
+    origin: allowedOrigins,
+    method: ['Get', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true,
+}
+
+app.use(cors(corsOption));
 app.use(express.json());
 
 // Admin Routes

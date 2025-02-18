@@ -1,4 +1,4 @@
-import React, { act } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -7,21 +7,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-
-const data = [
-  { name: "Jan", revenue: 2000 },
-  { name: "Feb", revenue: 3500 },
-  { name: "Mar", revenue: 3000 },
-  { name: "Apr", revenue: 6000 },
-  { name: "May", revenue: 2500 },
-  { name: "Jun", revenue: 2800 },
-  { name: "Jul", revenue: 4000 },
-  { name: "Aug", revenue: 3500 },
-  { name: "Sep", revenue: 3800 },
-  { name: "Oct", revenue: 5000 },
-  { name: "Nov", revenue: 2000 },
-  { name: "Dec", revenue: 2200 },
-];
+import { getSalesByMonth } from "../services/authService";
+import { ClipLoader } from "react-spinners";
 
 function CustomTooltip({ payload, label, active }) {
   if (active && payload && payload.length) {
@@ -36,6 +23,52 @@ function CustomTooltip({ payload, label, active }) {
 }
 
 const OverviewChart = () => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // API call to fetch data
+    const fetchData = async () => {
+      try {
+        const response = await getSalesByMonth();
+
+        // Plotting data into chart
+        const changeData = response.data.map((item) => ({
+          name: getMonthName(item._id),
+          revenue: item.totalRevenue,
+        }));
+
+        // update state with this data
+        setChartData(changeData);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setLoading(false);
+      }
+    };
+    // Call the fetchData function
+    fetchData();
+  }, []);
+
+  // Function to convert month number to month name
+  const getMonthName = (month) => {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return months[month - 1];
+  };
+
   return (
     <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl shadow-md h-full">
       <div className="mb-4">
@@ -43,25 +76,32 @@ const OverviewChart = () => {
       </div>
 
       <div className="w-full h-[300px] lg:h-[calc(100%-4rem)]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={{
-              top: 5,
-              right: 5,
-              left: 0,
-              bottom: 5,
-            }}
-          >
-            <XAxis dataKey="name" tick={{ fontSize: 12 }} tickMargin={8} />
-            <YAxis
-              tick={{ fontSize: 12 }}
-              tickFormatter={(value) => `$${value}`}
-            />
-            <Tooltip content={<CustomTooltip />} cursor={false} />
-            <Bar dataKey="revenue" fill="#8884d8" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+        {/* loading spinners */}
+        {loading ? (
+          <div className="flex justify-center items-center h-full">
+            <ClipLoader size={50} color="#8884d8" loading={loading} />
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={chartData}
+              margin={{
+                top: 5,
+                right: 5,
+                left: 0,
+                bottom: 5,
+              }}
+            >
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} tickMargin={8} />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => `$${value}`}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={false} />
+              <Bar dataKey="revenue" fill="#8884d8" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

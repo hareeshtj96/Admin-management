@@ -1,11 +1,7 @@
 import React from "react";
 import { DollarSign, Users, CreditCard, Activity } from "lucide-react";
 
-const Stats = ({ title, value, change }) => {
-  const changeColor = change >= 0 ? "text-green-500" : "text-red-500";
-  const changeSymbol = change >= 0 ? "+" : "-";
-
-  // Map title to corresponding icons
+const StatsCard = ({ title, value, change }) => {
   const iconMap = {
     "Total Revenue": <DollarSign className="w-6 h-6 text-gray-500" />,
     Subscriptions: <Users className="w-6 h-6 text-gray-500" />,
@@ -21,18 +17,20 @@ const Stats = ({ title, value, change }) => {
         </h3>
         <div>{iconMap[title]}</div>
       </div>
-
       <h2 className="text-lg sm:text-xl lg:text-3xl font-bold mt-1 break-words">
-        {title === "Total Revenue" ? `$${value}` : `+${value}`}
+        {title === "Total Revenue"
+          ? `$${value.toLocaleString()}`
+          : value !== 0
+          ? `+${value}`
+          : value}
       </h2>
-
-      <p className={`text-xs sm:text-sm lg:text-base mt-2 ${changeColor}`}>
+      <p className={`text-xs sm:text-sm lg:text-base mt-2 text-gray-600`}>
         {title === "Active Now"
-          ? `${changeSymbol}${change} since last hour`
-          : `${changeSymbol}${change}% from last month`}
+          ? `${change} since last hour`
+          : `+${change} from last month`}
       </p>
     </div>
   );
 };
 
-export default Stats;
+export default StatsCard;

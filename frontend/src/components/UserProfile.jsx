@@ -1,19 +1,50 @@
-import React, { useState } from "react";
-import { ChevronDown, ArrowUpDown } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ChevronDown } from "lucide-react";
+import UserTable from "./Table";
+import { getTransactions } from "../services/authService";
+import { ClipLoader } from "react-spinners";
+import usePagination from "../hooks/usePagination";
 
 const UserProfile = () => {
   const [filter, setFilter] = useState("");
+  const [userData, setUserData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = [
-    { status: "Success", email: "ken99@yahoo.com", amount: "$316.00" },
-    { status: "Success", email: "abe45@gmail.com", amount: "$242.00" },
-    { status: "Processing", email: "monserrat44@gmail.com", amount: "$837.00" },
-    { status: "Success", email: "silas22@gmail.com", amount: "$874.00" },
-    { status: "Failed", email: "carmella@hotmail.com", amount: "$721.00" },
+  const itemsPerPage = 5;
+
+  // useEffect
+  useEffect(() => {
+    // make API call
+    const fetchData = async () => {
+      try {
+        const response = await getTransactions();
+        setUserData(response);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const columns = [
+    { label: "Status", key: "transactionStatus" },
+    { label: "Email", key: "email", sortable: true },
+    { label: "Amount", key: "transactionAmount" },
   ];
 
-  const filteredUsers = users.filter((user) =>
-    user.email.toLowerCase().includes(filter.toLowerCase())
+  // Filter
+  const filteredUsers = Array.isArray(userData)
+    ? userData.filter(
+        (user) =>
+          user.email && user.email.toLowerCase().includes(filter.toLowerCase())
+      )
+    : [];
+
+  // pagination logic
+  const { currentItems, totalPages, paginate, currentPage } = usePagination(
+    filteredUsers,
+    itemsPerPage
   );
 
   return (
@@ -22,6 +53,7 @@ const UserProfile = () => {
         User Profiles
       </h2>
 
+      {/* Filter Section */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-4">
         <div className="relative w-full md:w-80">
           <input
@@ -39,54 +71,41 @@ const UserProfile = () => {
         </button>
       </div>
 
-      {/* Table */}
-      <div className="w-full overflow-x-auto">
-        <table className="w-full min-w-max border-separate border-spacing-0">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="text-left px-4 py-3 text-sm font-medium text-gray-500">
-                Status
-              </th>
-              <th className="text-left px-4 py-3 text-sm font-medium text-gray-500">
-                Email
-                <ArrowUpDown size={16} className="inline-block ml-3" />
-              </th>
-              <th className="text-left px-4 py-3 text-sm font-medium text-gray-500">
-                Amount
-              </th>
-              <th className="px-4 py-3 text-sm font-medium text-gray-500"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map((user, index) => (
-              <tr
-                key={index}
-                className="border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-4 py-3 text-sm">{user.status}</td>
-                <td className="px-4 py-3 text-sm text-gray-900">
-                  {user.email}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-900 flex items-center justify-between">
-                  {user.amount}
-                  <span className="text-gray-400 ml-0">...</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Spinner  */}
+      {loading ? (
+        <div className="flex justify-center items-center py-4">
+          <ClipLoader size={50} color={"#4C51BF"} loading={loading} />
+        </div>
+      ) : (
+        <UserTable data={currentItems} columns={columns} />
+      )}
 
       {/* Pagination */}
       <div className="flex flex-col md:flex-row justify-between items-center mt-4 px-4 md:px-0">
         <p className="text-sm text-gray-500 mb-2 md:mb-0">
-          0 of {users.length} row(s) selected.
+          {filteredUsers.length > 0
+            ? `${(currentPage - 1) * itemsPerPage + 1} - ${
+                currentPage * itemsPerPage > filteredUsers.length
+                  ? filteredUsers.length
+                  : currentPage * itemsPerPage
+              } of ${filteredUsers.length} row(s) selected.`
+            : "No rows available."}
         </p>
         <div className="flex gap-2">
-          <button className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+          <button
+            onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+            disabled={currentPage === 1}
+          >
             Previous
           </button>
-          <button className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+          <button
+            onClick={() =>
+              currentPage < totalPages && paginate(currentPage + 1)
+            }
+            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+            disabled={currentPage === totalPages}
+          >
             Next
           </button>
         </div>

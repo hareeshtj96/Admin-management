@@ -21,7 +21,7 @@ const Navbar = () => {
 
   // handle logout
   const handleLogout = () => {
-    localStorage.removeItem("adminToken");
+    localStorage.removeItem("accessToken");
     localStorage.removeItem("adminDetails");
     setAdmin(null);
     window.location.href = "/";
@@ -55,6 +55,11 @@ const Navbar = () => {
   // billing navigation
   const handleBilling = () => {
     navigate("/billing");
+  };
+
+  // settings navigation
+  const handleSettings = () => {
+    navigate("/adminSettings");
   };
 
   return (
@@ -119,7 +124,7 @@ const Navbar = () => {
           <div className="relative md:hidden" ref={mobileDropdownRef}>
             <button
               className="bg-gray-300 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold"
-              onClick={() => setMobileDropdownOpen(!dropdownOpen)}
+              onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
             >
               {admin ? getInitials(admin.name) : "A"}
             </button>
@@ -154,7 +159,10 @@ const Navbar = () => {
                     Billing
                     <span className="flex items-center gap-1">⌘B</span>
                   </li>
-                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+                  <li
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
+                    onClick={handleSettings}
+                  >
                     Settings
                     <span className="flex items-center gap-1">⌘S</span>
                   </li>
@@ -179,7 +187,7 @@ const Navbar = () => {
       <div className="relative hidden md:block" ref={desktopDropdownRef}>
         <button
           className="bg-gray-300 w-10 h-10 rounded-full items-center justify-center text-black font-bold"
-          onClick={() => setDesktopDropdownOpen(!dropdownOpen)}
+          onClick={() => setDesktopDropdownOpen(!desktopDropdownOpen)}
         >
           {admin ? getInitials(admin.name) : "A"}
         </button>
@@ -214,7 +222,10 @@ const Navbar = () => {
                 Billing
                 <span className="flex items-center gap-1">⌘B</span>
               </li>
-              <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center">
+              <li
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
+                onClick={handleSettings}
+              >
                 Settings
                 <span className="flex items-center gap-1">⌘S</span>
               </li>
