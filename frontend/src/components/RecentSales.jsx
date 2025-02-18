@@ -15,11 +15,9 @@ const RecentSales = () => {
     const fetchData = async () => {
       try {
         const response = await getRecentSales();
-
         setRecentData(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };

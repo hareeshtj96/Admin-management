@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+// function for generating access token
 const generateAccessToken = (adminId, email, role) => {
     return jwt.sign(
         { id: adminId, email, role },
@@ -8,6 +9,7 @@ const generateAccessToken = (adminId, email, role) => {
     );
 };
 
+// function for generating refresh token
 const generateRefreshToken = (adminId, email, role) => {
     return jwt.sign(
         { id: adminId, email, role },

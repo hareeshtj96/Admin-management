@@ -8,14 +8,14 @@ const SettingsPage = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-purple-950 via-purple-800 to-purple-900">
       <Navbar />
-      <div className="flex items-center justify-center mt-14 p-4">
+      <div className="flex items-start justify-center mt-14 p-4">
         <div className="w-full max-w-6xl mx-auto p-4 md:p-6 bg-white shadow-lg rounded-lg">
           <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">
             Settings
           </h1>
 
           {/* Tabs */}
-          <div className="flex flex-wrap md:flex-nowrap space-x-2 md:space-x-4 border-b pb-2 overflow-x-auto">
+          <div className="flex flex-wrap md:flex-nowrap space-x-2 md:space-x-4 border-b pb-2 overflow-x-auto min-w-[250px]">
             {[
               { value: "general", label: "General", Icon: Settings },
               { value: "notifications", label: "Notifications", Icon: Bell },
@@ -38,7 +38,7 @@ const SettingsPage = () => {
           </div>
 
           {/* Content */}
-          <div className="mt-4 md:mt-6 p-4 md:p-6 bg-white shadow-md rounded-lg">
+          <div className="mt-4 md:mt-6 p-4 md:p-6 bg-white shadow-md rounded-lg overflow-auto">
             {activeTab === "general" && (
               <>
                 <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">

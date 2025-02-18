@@ -11,11 +11,12 @@ const isAdmin = async (req, res, next) => {
         // verify token
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
+        // getting email from token
         const email = decodedToken.email;
 
         if (!email) return res.status(400).json({ message: "Invalid token: No email found" })
 
-        // find admin by accessing mongo collection
+        // find admin by accessing mongoDB collection
         const adminCollection = mongoose.connection.collection("Admin");
 
         const admin = await adminCollection.findOne({ email });

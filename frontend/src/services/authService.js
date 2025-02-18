@@ -2,7 +2,7 @@ import API from "../axios/axiosInstance";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// admin login function
+// admin login 
 export const adminLogin = async (formData) => {
     try {
         const response = await API.post(`${API_URL}/login`, formData);
@@ -14,11 +14,11 @@ export const adminLogin = async (formData) => {
         localStorage.setItem("adminDetails", JSON.stringify(adminDetails));
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Invalid email or Password";
+        throw error.response?.data || "Invalid email or Password";
     }
 };
 
-// change password function
+// change password 
 export const changePassword = async (newPassword, confirmPassword) => {
     try {
         const response = await API.patch(`${API_URL}/updatePassword`, { newPassword, confirmPassword },
@@ -26,27 +26,27 @@ export const changePassword = async (newPassword, confirmPassword) => {
         );
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
     }
 };
 
-// get sales by month function
+// get sales by month 
 export const getSalesByMonth = async () => {
     try {
         const response = await API.get(`${API_URL}/getByMonth`);
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
     }
 };
 
-// get recent sales function
+// get recent sales 
 export const getRecentSales = async () => {
     try {
         const response = await API.get(`${API_URL}/recentSales`);
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
     }
 };
 
@@ -56,7 +56,7 @@ export const getTransactions = async () => {
         const response = await API.get(`${API_URL}/transaction`);
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
     }
 };
 
@@ -66,7 +66,7 @@ export const getStats = async () => {
         const response = await API.get(`${API_URL}/getStats`);
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
     }
 }
 
@@ -76,7 +76,7 @@ export const getSalesByRegion = async () => {
         const response = await API.get(`${API_URL}/getByRegion`);
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
     }
 }
 
@@ -86,7 +86,32 @@ export const getByPlan = async () => {
         const response = await API.get(`${API_URL}/getByPlan`);
         return response.data;
     } catch (error) {
-        throw error.response?.data?.message || "Something went wrong";
+        throw error.response?.data || "Something went wrong";
+    }
+}
+
+// get sales report
+export const getSalesReport = async () => {
+    try {
+        const response = await API.get(`${API_URL}/getReport`);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || "Something went wrong";
+    }
+}
+
+// update database
+export const updateDatabase = async (formData) => {
+    try {
+        // passing token to backend to verify admin
+        const response = await API.put(`${API_URL}/updateData`, formData, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || "Something went wrong";
     }
 }
 

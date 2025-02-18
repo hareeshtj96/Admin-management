@@ -21,18 +21,16 @@ const LineChartComponent = () => {
     const fetchData = async () => {
       try {
         const response = await getByPlan();
-        console.log("reponse:", response);
-
         setChartData(response.data);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
         setLoading(false);
       }
     };
     fetchData();
   }, []);
 
+  // custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
@@ -71,7 +69,16 @@ const LineChartComponent = () => {
           />
           <YAxis stroke="#fff" tick={{ fill: "#fff" }} />
           <Tooltip content={<CustomTooltip />} />
-          <Legend verticalAlign="top" align="right" iconType="circle" />
+          <Legend
+            verticalAlign="top"
+            align="right"
+            iconType="circle"
+            wrapperStyle={{
+              marginBottom: "15px",
+              lineHeight: "30px",
+              padding: "10px",
+            }}
+          />
 
           {/* Line for Premium */}
           <Line

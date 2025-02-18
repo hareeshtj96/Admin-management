@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+// Function for pagination
 const usePagination = (data, itemsPerPage) => {
     const [currentPage, setCurrentPage] = useState(1);
 

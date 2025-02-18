@@ -1,171 +1,120 @@
-import React, { useState } from "react";
-import { Bar } from "react-chartjs-2";
-import "chart.js/auto";
+import React, { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import Navbar from "../components/Navbar";
+import StatsSection from "../components/StatsSection";
+import UserTable from "../components/Table";
+import { getSalesReport } from "../services/authService";
+import usePagination from "../hooks/usePagination";
+import { getNameFromEmail } from "../services/getInitials";
+import DownloadReport from "../components/DownloadReport";
 
 const Reports = () => {
-  const [dateRange, setDateRange] = useState("Last 30 Days");
+  const [data, setData] = useState([]);
 
-  const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [
-      {
-        label: "Revenue",
-        data: [4000, 5000, 3000, 7000, 6000, 8000],
-        backgroundColor: "rgba(124, 58, 237, 0.8)",
-        borderRadius: 6,
-      },
-    ],
-  };
+  // setting the items per page
+  const itemsPerPage = 5;
 
-  const options = {
-    plugins: {
-      legend: {
-        labels: {
-          color: "#1a1a1a",
-          font: {
-            size: 12,
-            weight: "bold",
-          },
-        },
-      },
-    },
-    scales: {
-      y: {
-        ticks: {
-          color: "#4a4a4a",
-          font: {
-            size: 12,
-          },
-        },
-        grid: {
-          color: "rgba(0, 0, 0, 0.05)",
-        },
-      },
-      x: {
-        ticks: {
-          color: "#4a4a4a",
-          font: {
-            size: 12,
-          },
-        },
-        grid: {
-          display: false,
-        },
-      },
-    },
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getSalesReport();
+        const formattedData = response.data.map((item) => ({
+          name:
+            item.name && item.name.trim() !== ""
+              ? item.name
+              : getNameFromEmail(item.email),
+          email: item.email,
+          region: item.region,
+          amount: `$${item.amount || 0}`,
+          plan: item.plan,
+          last_active: new Date(item.last_active)
+            .toISOString()
+            .substring(0, 10),
+        }));
 
-  const transactions = [
-    {
-      id: 1,
-      name: "Olivia Martin",
-      email: "olivia@email.com",
-      amount: "$1,999.00",
-    },
-    {
-      id: 2,
-      name: "Jackson Lee",
-      email: "jackson@email.com",
-      amount: "$39.00",
-    },
-    {
-      id: 3,
-      name: "Isabella Nguyen",
-      email: "isabella@email.com",
-      amount: "$299.00",
-    },
-    { id: 4, name: "William Kim", email: "will@email.com", amount: "$99.00" },
+        setData(formattedData);
+      } catch (error) {
+        console.error("Error occurred while fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Pagination logic
+  const { currentItems, totalPages, paginate, currentPage } = usePagination(
+    data,
+    itemsPerPage
+  );
+
+  // Columns for table
+  const columns = [
+    { label: "Name", key: "name" },
+    { label: "Email", key: "email" },
+    { label: "Region", key: "region" },
+    { label: "Amount", key: "amount", sortable: true },
+    { label: "Plan", key: "plan" },
+    { label: "Last Active", key: "last_active" },
   ];
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-purple-950 via-purple-800 to-purple-900">
-      <div className="container mx-auto px-6">
-        <Navbar />
-        <div className="flex justify-between items-center my-8">
-          <h1 className="text-2xl font-bold text-white">Reports</h1>
-          <button className="flex items-center gap-2 bg-white text-purple-800 px-6 py-2 rounded-lg hover:bg-gray-100 transition-all shadow-lg">
-            <Download size={18} />
-            Download Report
-          </button>
+      <Navbar />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">
+            EvirexSoft Sales Reports
+          </h1>
+
+          {/* Download report component */}
+          <div className="relative">
+            <DownloadReport
+              data={data}
+              onDownload={(option) =>
+                console.log("Downloading report for", option)
+              }
+            />
+          </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex justify-end mb-6">
-          <select
-            className="bg-white text-purple-800 px-4 py-2 rounded-lg shadow-lg outline-none cursor-pointer hover:bg-gray-50 transition-all"
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-          >
-            <option>Last 7 Days</option>
-            <option>Last 30 Days</option>
-            <option>Last 6 Months</option>
-            <option>Last Year</option>
-          </select>
-        </div>
-
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { title: "Total Revenue", value: "$45,231.89", growth: "+12.5%" },
-            { title: "Subscriptions", value: "2,350", growth: "+15.2%" },
-            { title: "Sales", value: "12,234", growth: "+8.1%" },
-            { title: "Active Users", value: "573", growth: "+4.9%" },
-          ].map((metric, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl shadow-xl p-6 transform hover:scale-105 transition-all duration-300"
-            >
-              <h3 className="text-gray-600 text-sm">{metric.title}</h3>
-              <p className="text-2xl font-bold text-gray-900 mt-2">
-                {metric.value}
-              </p>
-              <span className="text-green-500 text-sm font-medium">
-                {metric.growth} from last month
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Revenue Chart */}
-        <div className="my-8 bg-white p-6 rounded-xl shadow-xl">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">
-            Revenue Overview
-          </h3>
-          <Bar data={data} options={options} />
+        {/* Stats  */}
+        <div className="gap-8 mb-8">
+          <StatsSection />
         </div>
 
         {/* Transactions Table */}
-        <div className="my-8 bg-white p-6 rounded-xl shadow-xl">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">
-            Recent Transactions
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left p-4 text-gray-600">Name</th>
-                  <th className="text-left p-4 text-gray-600">Email</th>
-                  <th className="text-left p-4 text-gray-600">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {transactions.map((tx) => (
-                  <tr
-                    key={tx.id}
-                    className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="p-4 text-gray-900 font-medium">{tx.name}</td>
-                    <td className="p-4 text-gray-600">{tx.email}</td>
-                    <td className="p-4 text-gray-900 font-medium">
-                      {tx.amount}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Recent Transactions
+            </h2>
           </div>
+          <div className="overflow-x-auto">
+            <UserTable data={currentItems} columns={columns} />
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center mt-4 px-6 py-4 border-t border-gray-200">
+              <button
+                onClick={() => paginate(currentPage - 1)}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span className="mx-4 text-gray-700 text-sm">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => paginate(currentPage + 1)}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,10 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, ArrowBigUp } from "lucide-react";
+import { Menu, X, ArrowBigUp, Plus } from "lucide-react";
 import { getInitials } from "../services/getInitials";
+import Modal from "./Modal";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
@@ -119,9 +121,22 @@ const Navbar = () => {
           >
             Settings
           </NavLink>
+          <NavLink
+            to="#"
+            className="flex items-center relative"
+            onClick={(e) => {
+              e.preventDefault();
+              setModalOpen(true);
+            }}
+          >
+            <Plus size={20} />
+          </NavLink>
 
           {/* Avatar mobile */}
-          <div className="relative md:hidden" ref={mobileDropdownRef}>
+          <div
+            className="flex items-center relative md:hidden"
+            ref={mobileDropdownRef}
+          >
             <button
               className="bg-gray-300 w-10 h-10 rounded-full flex items-center justify-center text-black font-bold"
               onClick={() => setMobileDropdownOpen(!mobileDropdownOpen)}
@@ -130,7 +145,7 @@ const Navbar = () => {
             </button>
 
             {mobileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 text-black">
+              <div className="absolute top-0 left-0 right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 text-black z-50 max-h-[50vh] overflow-auto">
                 <div className="px-4 py-2 border-b">
                   {admin ? (
                     <>
@@ -193,7 +208,7 @@ const Navbar = () => {
         </button>
 
         {desktopDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 text-black">
+          <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg p-2 z-50 text-black">
             <div className="px-4 py-2 border-b">
               {admin ? (
                 <>
@@ -243,6 +258,8 @@ const Navbar = () => {
           </div>
         )}
       </div>
+      {/* Modal*/}
+      {modalOpen && <Modal onClose={() => setModalOpen(false)} />}
     </nav>
   );
 };

@@ -3,17 +3,24 @@ import ClipLoader from "react-spinners/ClipLoader";
 import StatsCard from "../components/StatsCard";
 import { getStats } from "../services/authService";
 
-const StatsSection = () => {
+const StatsSection = ({ showActiveNow = true, gap = "gap-4" }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [randomChanges, setRandomChanges] = useState({});
 
   useEffect(() => {
     const loadStats = async () => {
       try {
         const data = await getStats();
         setStats(data);
+        const newRandomChanges = {
+          totalRevenue: getRandomChange(),
+          activeSubscriptions: getRandomChange(),
+          totalSales: getRandomChange(),
+          activeNow: getRandomChange(),
+        };
+        setRandomChanges(newRandomChanges);
       } catch (error) {
-        console.error("Failed to fetch stats");
       } finally {
         setLoading(false);
       }
@@ -22,7 +29,7 @@ const StatsSection = () => {
     loadStats();
   }, []);
 
-  //generate random percentage change
+  // Generate random percentage change
   const getRandomChange = () => {
     const randomChange = (Math.random() * 20 + 1).toFixed(1);
     return `${randomChange}%`;
@@ -37,27 +44,29 @@ const StatsSection = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 ${gap}`}>
       <StatsCard
         title="Total Revenue"
         value={stats.totalRevenue}
-        change={getRandomChange()}
+        change={randomChanges.totalRevenue}
       />
       <StatsCard
         title="Subscriptions"
         value={stats.activeSubscriptions}
-        change={getRandomChange()}
+        change={randomChanges.activeSubscriptions}
       />
       <StatsCard
         title="Sales"
         value={stats.totalSales}
-        change={getRandomChange()}
+        change={randomChanges.totalSales}
       />
-      <StatsCard
-        title="Active Now"
-        value={stats.activeNow}
-        change={getRandomChange()}
-      />
+      {showActiveNow && (
+        <StatsCard
+          title="Active Now"
+          value={stats.activeNow}
+          change={randomChanges.activeNow}
+        />
+      )}
     </div>
   );
 };

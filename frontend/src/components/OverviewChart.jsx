@@ -31,7 +31,6 @@ const OverviewChart = () => {
     const fetchData = async () => {
       try {
         const response = await getSalesByMonth();
-
         // Plotting data into chart
         const changeData = response.data.map((item) => ({
           name: getMonthName(item._id),
@@ -42,7 +41,6 @@ const OverviewChart = () => {
         setChartData(changeData);
         setLoading(false);
       } catch (err) {
-        console.error("Error fetching data:", err);
         setLoading(false);
       }
     };
