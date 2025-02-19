@@ -52,7 +52,6 @@ const updateDataController = async (req, res) => {
         return res.status(201).json({ message: "New sale data inserted successfully" });
 
     } catch (error) {
-        console.error("Error occurred while inserting data into the database:", error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };

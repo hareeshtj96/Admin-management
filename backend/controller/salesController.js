@@ -24,7 +24,6 @@ const getSalesByRegion = async (req, res) => {
         }
         return res.status(200).json({ success: true, data: salesData });
     } catch (error) {
-        console.error("Error while fetching sales by region:", error);
         return res
             .status(500)
             .json({ success: false, message: "Internal Server Error" });
@@ -56,7 +55,6 @@ const getSalesByMonth = async (req, res) => {
 
         return res.status(200).json({ success: true, data: salesData });
     } catch (error) {
-        console.error("Error while fetching sales by month:", error);
         return res
             .status(500)
             .json({ success: false, message: "Internal Server Error" });
@@ -81,7 +79,6 @@ const getRecentSales = async (req, res) => {
 
         return res.status(200).json({ success: true, data: recentSales });
     } catch (error) {
-        console.error("Error while fetching recent sales data:", error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -105,7 +102,6 @@ const getTransactionDetails = async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
-        console.error("Error fetching transaction details:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -208,7 +204,6 @@ const getStats = async (req, res) => {
             totalSales: surplus,
         });
     } catch (error) {
-        console.error("Error fetching stats:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -266,7 +261,6 @@ const getTotalSubscriptionByPlan = async (req, res) => {
 
         return res.status(200).json({ success: true, data: restructuredData });
     } catch (error) {
-        console.error("Error while fetching sunscription data by plan:", error);
         return res.status(500).json({ message: "Internal Server Error" });
     }
 };
@@ -305,7 +299,6 @@ const getSalesReport = async (req, res) => {
 
         res.json({ success: true, data: transactions });
     } catch (error) {
-        console.error("Error fetching sales report:", error);
         res.status(500).json({ message: "Internal Server Error" });
     }
 };

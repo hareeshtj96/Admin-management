@@ -38,7 +38,6 @@ const adminLogin = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Admin login error:", error);
         res.status(500).json({ message: "Internal Server Error" })
 
     }

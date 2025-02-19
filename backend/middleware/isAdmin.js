@@ -29,7 +29,6 @@ const isAdmin = async (req, res, next) => {
         if (error === "TokenExpiredError") {
             return res.status(401).json({ message: "Unauthorized: Token has expired" });
         } else {
-            console.error("Token verification error:", error);
             return res.status(401).json({ message: "Unauthorized: Invalid token" });
         }
     }
