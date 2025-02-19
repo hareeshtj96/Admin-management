@@ -36,7 +36,7 @@ A comprehensive admin dashboard for business data analysis and visualization, fe
 
 - **Frontend**
   - React.js for UI components
-  - Chart.js for data visualization
+  - Recharts for data visualization
   - Tailwind CSS for styling
 
 - **Backend**
