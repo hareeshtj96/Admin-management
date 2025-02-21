@@ -1,4 +1,4 @@
-# EvirexSoft Admin Management
+# Admin Management
 
 A comprehensive admin dashboard for business data analysis and visualization, featuring interactive charts to track revenue, sales, and subscriptions across different regions and plans.
 
@@ -50,8 +50,8 @@ A comprehensive admin dashboard for business data analysis and visualization, fe
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/EvirexSoft-Admin-Management.git
-cd EvirexSoft-Admin-Management
+git clone https://github.com/yourusername/Admin-Management.git
+cd Admin-Management
 ```
 
 2. Set up the backend
